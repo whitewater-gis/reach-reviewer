@@ -1,13 +1,13 @@
 angular.module('reach-reviewer', ['esri.map'])
 
-  .controller('AppController', function($scope){
-    $scope.invalid_message = 'None yet!';
+  .controller('AppController', function(){
+    this.invalid_message = 'None yet!';
   })
 
   .controller('InvalidController', ['$http', function($http){
 
     // url
-    var getIdsUrl = 'http://services.arcgis.com/2zRtyrQ6q4mGrLJK/arcgis/rest/services/southeast_review_map/FeatureServer/5/query?' +
+    var getIdsUrl = 'http://services.arcgis.com/2zRtyrQ6q4mGrLJK/arcgis/rest/services/reach_review/FeatureServer/5/query?' +
       'where=1%3D1' +
       '&outFields=name_river, name_section, reach_id, ' +
       '&orderByFields=name_river' +
@@ -33,12 +33,20 @@ angular.module('reach-reviewer', ['esri.map'])
 
   }])
 
-  .controller('MapController', function($scope){
-    $scope.map = {
-      center: {
-        lng: -122.676207,
-        lat: 45.523452
-      },
-      zoom: 12
-    };
-  });
+  .controller('MapController', function($scope, esriLoader, esriRegistry) {
+      $scope.map = {
+        center: {
+          lng: -122.6819,
+          lat: 45.5200
+        },
+        zoom: 13
+      };
+      $scope.goToBookmark = function(bookmark) {
+        esriRegistry.get('myMap').then(function(map) {
+          esriLoader('esri/geometry/Extent').then(function(Extent) {
+            var extent = new Extent(bookmark.extent);
+            map.setExtent(extent);
+          });
+        });
+      };
+    });
